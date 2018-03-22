@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -19,33 +18,34 @@ import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 import java.io.IOException;
 
 import vna.example.com.myandroidlib.Joke;
-import vna.example.com.myjavalib.MyClass;
 
 
 class MyAsynctask extends AsyncTask<String, Void, String> {
     private static MyApi myApiService = null;
     private Context context;
     Listener listener = null;
-    public interface Listener{
+
+    public interface Listener {
         void onReturn(String joke);
     }
 
-    public MyAsynctask(Context context){
+    public MyAsynctask(Context context) {
 
         this.context = context;
-        if(context instanceof Listener ){
+        if (context instanceof Listener) {
             listener = (Listener) context;
-        }else {
+        } else {
             try {
-                throw new Exception("the context must implement the listener");
+                throw new Exception("error");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     @Override
     protected String doInBackground(String... params) {
-        if(myApiService == null) {  // Only do this once
+        if (myApiService == null) {  // Only do this once
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
                     // options for running against local devappserver
@@ -78,8 +78,8 @@ class MyAsynctask extends AsyncTask<String, Void, String> {
         listener.onReturn(joke);
     }
 }
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity implements MyAsynctask.Listener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,15 +110,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        MyClass myclass = new MyClass();
+
+        new MyAsynctask(this).execute("joke");
+
+    }
+
+
+    @Override
+    public void onReturn(String joke) {
         Intent intent = new Intent(this, Joke.class);
-
-        intent.putExtra("test", myclass.getJoke());
-
+        intent.putExtra("joke", joke);
         startActivity(intent);
-
-
-        Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
     }
 
 

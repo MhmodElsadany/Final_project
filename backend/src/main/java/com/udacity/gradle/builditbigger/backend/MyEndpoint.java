@@ -23,8 +23,8 @@ public class MyEndpoint {
     /** A simple endpoint method that takes a name and says Hi back */
     @ApiMethod(name = "sayHi")
     public MyClass sayHi(@Named("name") String name) {
-      MyClass myClass = new MyClass();
 
+        MyClass myClass = new MyClass();
         myClass.setJoke(name);
 
         return myClass;
